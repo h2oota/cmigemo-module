@@ -1,0 +1,10 @@
+a.out
+*.obj
+*.o
+*.dylib
+compile_commands.json
+
+build/
+.cache/
+%*
+*~
