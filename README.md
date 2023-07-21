@@ -1,7 +1,7 @@
 # cmigemo-module
 
 [C/Migemo](https://github.com/koron/cmigemo)をGNU Emacsのダイナミックモジュールにします。
-それを利用するmigemo.elの修正も含みます。
+それを利用する[migemo.el](https://github.com/emacs-jp/migemo)の修正も含みます。
 
 # DEMO
 
