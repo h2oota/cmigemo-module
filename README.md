@@ -20,13 +20,15 @@ C/MigemoをEmacsのダイナミックモジュールとしてロードします�
 # Installation
 
 ```sh
-cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DINSTALL_FLAT=1 --install-prefix=/usr/local/share/emacs/site-lisp
+git clone --recursive git@github.com:h2oota/cmigemo-module.git
+cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DINSTALL_FLAT=1
 cmake --build build
 cmake --install build
 ```
- -DINSTALL_FLAT=1を設定すると{migemo.el,migemo.elc,migemo-cmigemo.so}をinstall-prefixの直下に
-インストールします。設定していない場合はinstall-prefixの下にmigemoディレクトリを作成し、その下に
-インストールします。
+ -DINSTALL_FLAT=1を設定すると{migemo.el,migemo.elc,migemo-cmigemo.so}を${CMAKE_INSTALL_PREFIX}の直下にインストールします。
+未設定の場合は${CMAKE_INSTALL_PREFIX}/migemo/にインストールします。
+CMAKE_INSTALL_PREFIXのデフォルトは/usr/local/share/emacs/site-lispです変更する場合は
+cmake -B buildの実行に--install-prefix=/path/to/installを追加します。
 
 # Usage
 
