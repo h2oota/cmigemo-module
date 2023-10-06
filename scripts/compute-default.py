@@ -26,7 +26,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='opt_names', metavar='OPTION_NAMES', help='option names which would be computes', nargs='*')
 
-    global_intstall = os.getenv('GLOBAL_INSTALL')
+    intstall_global = os.getenv('INSTALL_GLOBAL')
 
     args = parser.parse_args()
     opsys = platform.system().lower()
@@ -69,7 +69,7 @@ def main():
         print('emacs={}'.format(str(emacs)))
 
     if len(args.opt_names) == 0 or 'prefix' in args.opt_names:
-        if global_intstall:
+        if intstall_global:
             exp = '(princ (expand-file-name ".." lisp-directory))'
         else:
             exp = '(princ (expand-file-name user-emacs-directory))'
@@ -81,45 +81,9 @@ def main():
         print('prefix={}'.format(emacs_proc.stdout.read()))
 
     if len(args.opt_names) == 0 or 'lispdir' in args.opt_names:
-        if global_intstall:
+        if intstall_global:
             print('lispdir=site-lisp')
         else:
             print('lispdir=lisp')
-
-
-# def get_pkgs(verbose=False) -> dict[str, dict]:
-#     pkg_re = re.compile(r'^(\S+)\s+@[^+]+((?:\+[^+]+)+)?')
-#     dep_re = re.compile(r'(depends_[^:\s]+|category)\s*:\s*(.*)', re.I)
-#     sep_re = re.compile(r'\s*,\s*')
-#     var_re = re.compile(r'\+[^+]+')
-
-#     proc =
-#     assert(proc and proc.stdout)
-
-#     packages = dict()
-
-#     for l in proc.stdout.readlines():
-#         m = pkg_re.match(l.strip())
-
-
-
-
-#     for opt in options:
-#         if (len(args.opt_names) > 0 and opt not in args.opt_names):
-#             continue
-#         if opt == 'emacs':
-#             print('emacs={}'.format(emacs))
-#         elif opt == 'prefix':
-#             if args.user:
-#                 print('prefix={}'.format(pathlib.Path.home() / '.emacs.d'))
-#             else:
-#                 print('prefix={}'.format(app / 'Contents/Resources'))
-#         elif opt == 'lispdir':
-#             if args.user:
-#                 print('lispdir=lisp')
-#             else:
-#                 print('lispdir=site-lisp')
-#         else:
-#             error_exit('{}: unknown option', opt)
 
 main()
