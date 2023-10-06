@@ -20,22 +20,19 @@ C/MigemoをEmacsのダイナミックモジュールとしてロードします�
 meson setup builddir
 meson compile -C builddir
 meson install --no-rebuild -C builddir
-git clone --recursive git@github.com:h2oota/cmigemo-module.git
-cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DINSTALL_FLAT=1
-cmake --build build
-cmake --install build
 ```
- -DINSTALL_FLAT=1を設定すると{migemo.el,migemo.elc,migemo-cmigemo.so}を${CMAKE_INSTALL_PREFIX}の直下にインストールします。
-未設定の場合は${CMAKE_INSTALL_PREFIX}/migemo/にインストールします。
-${CMAKE_INSTALL_PREFIX}のデフォルトは/usr/local/share/emacs/site-lispです変更する場合は
-cmake -B buildの実行に--install-prefix=/path/to/installを追加します。
+
+デフォルトインストールは~/.emacs.d/lispです。
+環境変数`INSTALL_GLOBAL'を設定して、meson setupを実行すると、emacsのインストールディレクトリのsite-lispにインストールします。
+```sh
+INSTALL_GLOBAL=yes meson setup builddir
+```
 
 # Usage
 
-migemo-cmigemo-moduleのデフォルト設定はダイナミックモジュールのファイル名"cmigemo-module"になっていて、
-これをロードして利用します。何らかの原因でmigemo-cmigemo-moduleがロードできない場合は従来通りの動作に
-なります。migemo-cmigemo-moduleがnilに設定されている場合も従来の動作です。
-migemo-cmigemo-moduleをカスタマイズするなどの方法で設定してください。
+カスタマイズ変数migemo-cmigemo-moduleのデフォルト設定はダイナミックモジュールのファイル名"cmigemo-module"です。
+この変数がnil以外の場合、これをロードして利用します。何らかの原因でmigemo-cmigemo-moduleがロードできない場合は
+従来通りの動作になります。
 
 # Note
 
