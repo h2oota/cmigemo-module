@@ -1,0 +1,97 @@
+diff --git a/migemo.el b/migemo.el
+index 7568f0b..a5b1b2a 100644
+--- a/migemo.el
++++ b/migemo.el
+@@ -151,6 +151,15 @@
+   :group 'migemo
+   :type 'integer)
+ 
++(defcustom migemo-cmigemo-module "cmigemo-module"
++  "C/Migemo emacs module."
++  :group 'migemo
++  :type 'file)
++
++(declare-function migemo-cmigemo-open nil (dict &rest args))
++(declare-function migemo-cmigemo-query nil (mgm-handle word))
++(declare-function migemo-cmigemo-close nil (mgm-handle))
++
+ ;; internal variables
+ (defvar migemo-process nil)
+ (defvar migemo-buffer nil)
+@@ -163,6 +172,7 @@
+ (defvar migemo-search-pattern-alist nil)
+ (defvar migemo-do-isearch nil)
+ (defvar migemo-register-isearch-keybinding-function nil)
++(defvar migemo-cmigemo-handle nil)
+ 
+ ;; For warnings of byte-compile. Following functions are defined in XEmacs
+ (declare-function set-process-input-coding-system "code-process")
+@@ -209,7 +219,16 @@
+   (when (and migemo-use-default-isearch-keybinding
+              migemo-register-isearch-keybinding-function)
+     (funcall migemo-register-isearch-keybinding-function))
+-  (or (and migemo-process
++  (when (and migemo-cmigemo-module
++             (or (featurep 'cmigemo-module)
++                 (load migemo-cmigemo-module t)))
++    (unless (and migemo-cmigemo-handle
++                 (eq (get migemo-cmigemo-handle 'status) 'opened))
++      (setq migemo-cmigemo-handle
++            (migemo-cmigemo-open migemo-dictionary :coding-system migemo-coding-system))))
++  (or (and migemo-cmigemo-handle
++           (eq (get migemo-cmigemo-handle 'status) 'opened))
++      (and migemo-process
+            (eq (process-status migemo-process) 'run))
+       (let ((options
+              (delq nil
+@@ -236,6 +255,20 @@
+         (replace-match to nil t)))
+     (buffer-substring (point-min) (point-max))))
+ 
++(defun migemo-get-pattern-from-process (word)
++  (with-current-buffer (process-buffer migemo-process)
++    (delete-region (point-min) (point-max))
++    (process-send-string migemo-process (concat word "\n"))
++    (while (not (and (> (point-max) 1)
++                     (eq (char-after (1- (point-max))) ?\n)))
++      (accept-process-output migemo-process
++                             0 migemo-accept-process-output-timeout-msec))
++    (buffer-substring (point-min) (1- (point-max)))))
++
++(defun migemo-cmigemo-active-p ()
++  (and migemo-cmigemo-handle
++       (eq (get migemo-cmigemo-handle 'status) 'opened)))
++
+ (defun migemo-get-pattern (word)
+   (cond
+    ((< (length word) migemo-isearch-min-length)
+@@ -257,14 +290,10 @@
+               (setq migemo-pattern-alist (cons alst (delq alst migemo-pattern-alist)))
+               (cdr alst))
+              (t
+-              (with-current-buffer (process-buffer migemo-process)
+-                (delete-region (point-min) (point-max))
+-                (process-send-string migemo-process (concat word "\n"))
+-                (while (not (and (> (point-max) 1)
+-                                 (eq (char-after (1- (point-max))) ?\n)))
+-                  (accept-process-output migemo-process
+-                                         0 migemo-accept-process-output-timeout-msec))
+-                (setq pattern (buffer-substring (point-min) (1- (point-max)))))
++              (setq pattern
++                    (if (migemo-cmigemo-active-p)
++                        (migemo-cmigemo-query migemo-cmigemo-handle word)
++                      (migemo-get-pattern-from-process word)))
+               (when (and (memq system-type '(windows-nt OS/2 emx))
+                          (> (length pattern) 1)
+                          (eq ?\r (aref pattern (1- (length pattern)))))
+@@ -326,6 +355,10 @@
+ (defun migemo-kill ()
+   "Kill migemo process."
+   (interactive)
++  (when (and migemo-cmigemo-handle
++             (eq (get migemo-cmigemo-handle 'status) 'opened))
++    (migemo-cmigemo-close migemo-cmigemo-handle)
++    (setq migemo-cmigemo-handle nil))
+   (when (and migemo-process (eq (process-status migemo-process) 'run))
+     (kill-process migemo-process)
+     (setq migemo-process nil)

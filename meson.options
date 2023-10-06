@@ -1,0 +1,4 @@
+option('global-install', type: 'boolean', value: true)
+option('lispdir', type: 'string', value: 'lisp')
+option('emacs', type: 'string', value: '')
+#option('prefix', type: 'string', value: '~/.emacs.d')

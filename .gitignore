@@ -3,8 +3,8 @@ a.out
 *.o
 *.dylib
 compile_commands.json
-
-build/
+subprojects/migemo/
+builddir/
 .cache/
 %*
 *~

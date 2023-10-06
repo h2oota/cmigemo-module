@@ -12,11 +12,14 @@ C/MigemoをEmacsのダイナミックモジュールとしてロードします�
 
 - GNU Emacs >= 27.1
 - C/Migemo >= rel-1_2
-- CMake >= 3.24
-
+- meson >= 1.2
+- ninja >= 1.11
 # Installation
 
 ```sh
+meson setup builddir
+meson compile -C builddir
+meson install --no-rebuild -C builddir
 git clone --recursive git@github.com:h2oota/cmigemo-module.git
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DINSTALL_FLAT=1
 cmake --build build
@@ -29,9 +32,9 @@ cmake -B buildの実行に--install-prefix=/path/to/installを追加します。
 
 # Usage
 
-migemo-cmigemo-moduleにファイル名(migemo-cmigemo)を設定して、(migemo-init)を呼び出すと
-migemo-cmigemoをロードして、利用します。何らかの原因でmigemo-cmigemoがロードできない場合は
-従来通りの動作になります。
+migemo-cmigemo-moduleのデフォルト設定はダイナミックモジュールのファイル名"cmigemo-module"になっていて、
+これをロードして利用します。何らかの原因でmigemo-cmigemo-moduleがロードできない場合は従来通りの動作に
+なります。migemo-cmigemo-moduleがnilに設定されている場合も従来の動作です。
 migemo-cmigemo-moduleをカスタマイズするなどの方法で設定してください。
 
 # Note
