@@ -1,6 +1,0 @@
-[wrap-git]
-url = https://github.com/emacs-jp/migemo.git
-revision = head
-depth = 1
-
-diff_files = migemo/cmigemo-module.patch, migemo/meson-build.patch

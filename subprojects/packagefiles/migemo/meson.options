@@ -1,2 +1,0 @@
-option('emacs', type: 'string')
-option('lispdir', type: 'string', value: 'lisp')
